@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>Infinity Build Pro | Premium Building Solutions</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --gold: #C8A951;
+  --gold-light: #DFC67A;
+  --gold-dark: #A9883A;
+  --bg-deep: #0F0F0F;
+  --bg-rich: #151515;
+  --bg-card: #1C1C1C;
+  --text-primary: #F5F3EF;
+  --text-secondary: #B8B6AE;
+  --text-muted: #7E7C74;
+  --border-dim: rgba(200, 169, 81, 0.18);
+  --shadow-gold: 0 10px 30px -10px rgba(200, 169, 81, 0.15);
+  --transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+
+body {
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Typography */
+h1, h2, h3, h4, .serif {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Loader */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-deep);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  transition: opacity 0.8s ease, visibility 0.8s;
+}
+#loader.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+.loader-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 6vw, 48px);
+  color: var(--gold);
+  letter-spacing: 4px;
+  font-weight: 500;
+}
+.loader-bar {
+  width: 180px;
+  height: 1px;
+  background: #2A2A2A;
+  overflow: hidden;
+}
+.loader-fill {
+  width: 0%;
+  height: 100%;
+  background: var(--gold);
+  animation: fillBar 2s ease forwards;
+}
+@keyframes fillBar { to { width: 100%; } }
+
+/* Navigation */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 0 clamp(24px, 5vw, 64px);
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+  transition: var(--transition);
+  background: transparent;
+}
+nav.scrolled {
+  background: rgba(15, 15, 15, 0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-dim);
+}
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+.logo span { color: var(--gold); font-weight: 600; }
+.nav-links { display: flex; gap: 42px; list-style: none; }
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: var(--transition);
+}
+.nav-links a:hover { color: var(--gold); }
+.quote-btn {
+  background: var(--gold);
+  color: var(--bg-deep) !important;
+  padding: 8px 24px;
+  border-radius: 40px;
+  font-weight: 600 !important;
+}
+.hamburger { display: none; flex-direction: column; gap: 6px; cursor: pointer; }
+.hamburger span { width: 26px; height: 1.5px; background: var(--text-primary); transition: 0.3s; }
+.mobile-menu {
+  position: fixed;
+  top: 80px;
+  left: 0;
+  right: 0;
+  background: rgba(15, 15, 15, 0.98);
+  backdrop-filter: blur(20px);
+  padding: 32px;
+  display: none;
+  flex-direction: column;
+  gap: 24px;
+  z-index: 999;
+  border-bottom: 1px solid var(--border-dim);
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 16px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 0;
+}
+
+/* Reveal Animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Buttons */
+.btn-gold {
+  background: var(--gold);
+  color: #0A0A0A;
+  padding: 12px 32px;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transition);
+  border: none;
+  cursor: pointer;
+}
+.btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); }
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(200, 169, 81, 0.5);
+  color: var(--text-primary);
+  padding: 12px 32px;
+  border-radius: 40px;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: var(--transition);
+}
+.btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+/* Sections */
+section { padding: 100px clamp(24px, 6vw, 80px); }
+.container { max-width: 1280px; margin: 0 auto; }
+.section-tag {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-tag::before {
+  content: '';
+  width: 32px;
+  height: 1px;
+  background: var(--gold);
+}
+h2 { font-size: clamp(34px, 6vw, 56px); margin-bottom: 20px; line-height: 1.15; }
+h2 em { color: var(--gold); font-style: normal; }
+
+/* Hero */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-top: 80px;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hero-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.6) 60%, rgba(0,0,0,0.3) 100%);
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--border-dim);
+  padding: 6px 20px;
+  border-radius: 60px;
+  font-size: 12px;
+  margin-bottom: 28px;
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+}
+.hero h1 { font-size: clamp(48px, 9vw, 88px); line-height: 1.08; margin-bottom: 24px; }
+.hero h1 em { color: var(--gold); font-style: italic; }
+.hero p { font-size: 16px; color: var(--text-secondary); max-width: 480px; margin-bottom: 36px; }
+.stats {
+  display: flex;
+  gap: 48px;
+  margin-top: 60px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.stat-num { font-size: 38px; font-family: 'Cormorant Garamond', serif; font-weight: 500; }
+.stat-num span { color: var(--gold); }
+.stat-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); }
+
+/* Marquee */
+.marquee {
+  background: var(--bg-rich);
+  padding: 20px 0;
+  border-top: 1px solid var(--border-dim);
+  border-bottom: 1px solid var(--border-dim);
+  overflow: hidden;
+}
+.marquee-track {
+  display: flex;
+  gap: 56px;
+  animation: scroll 25s linear infinite;
+  width: max-content;
+}
+.marquee-item {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 56px;
+}
+.marquee-dot { width: 4px; height: 4px; background: var(--gold); border-radius: 50%; }
+@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* Services Grid */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: var(--border-dim);
+  border: 1px solid var(--border-dim);
+  margin-top: 48px;
+}
+.service-card {
+  background: var(--bg-deep);
+  padding: 32px 28px;
+  transition: var(--transition);
+  cursor: pointer;
+}
+.service-card:hover { background: var(--bg-card); }
+.service-img {
+  width: 100%;
+  height: 190px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.service-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s;
+}
+.service-card:hover .service-img img { transform: scale(1.04); }
+.service-cat { font-size: 10px; color: var(--gold); letter-spacing: 2px; margin-bottom: 10px; }
+.service-title { font-size: 24px; margin-bottom: 12px; }
+.service-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
+.feature-list { list-style: none; }
+.feature-list li { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.feature-list li::before { content: '—'; color: var(--gold); }
+
+/* Modal Gallery */
+.modal-gallery {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 8, 8, 0.96);
+  backdrop-filter: blur(12px);
+  z-index: 11000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 24px;
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s;
+}
+.modal-gallery.open { opacity: 1; visibility: visible; }
+.modal-content {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1100px;
+  padding: 20px;
+}
+.modal-content img {
+  width: 260px;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 2px solid var(--gold);
+  box-shadow: 0 20px 35px rgba(0,0,0,0.6);
+}
+.modal-title { font-size: 32px; font-family: 'Cormorant Garamond', serif; color: var(--gold); }
+.close-modal {
+  position: absolute;
+  top: 30px;
+  right: 40px;
+  font-size: 40px;
+  color: var(--gold);
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+/* Why Us */
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 28px;
+  margin-top: 56px;
+}
+.why-card {
+  background: var(--bg-card);
+  padding: 32px 28px;
+  border-radius: 16px;
+  border: 1px solid var(--border-dim);
+  transition: var(--transition);
+}
+.why-card:hover { border-color: var(--gold); transform: translateY(-5px); }
+.why-number { font-size: 56px; font-family: 'Cormorant Garamond', serif; color: rgba(200, 169, 81, 0.15); margin-bottom: 12px; }
+.why-title { font-size: 20px; font-weight: 500; margin-bottom: 10px; }
+.why-text { font-size: 13px; color: var(--text-secondary); }
+
+/* Process */
+.process-list { margin-top: 56px; }
+.process-item {
+  display: grid;
+  grid-template-columns: 70px 1fr 1.2fr;
+  gap: 32px;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--border-dim);
+  align-items: center;
+}
+.process-num { font-size: 48px; font-family: 'Cormorant Garamond', serif; color: rgba(200, 169, 81, 0.25); }
+.process-title { font-size: 22px; font-weight: 500; }
+.process-desc { font-size: 13px; color: var(--text-secondary); }
+
+/* Testimonials */
+.testimonial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 28px;
+  margin-top: 56px;
+}
+.testimonial-card {
+  background: var(--bg-card);
+  padding: 32px;
+  border-radius: 20px;
+  border: 1px solid var(--border-dim);
+}
+.stars { color: var(--gold); margin-bottom: 18px; letter-spacing: 2px; }
+.testimonial-text { font-size: 16px; font-style: italic; margin-bottom: 24px; color: var(--text-secondary); }
+.client { display: flex; align-items: center; gap: 14px; }
+.client-img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--gold);
+}
+.client-name { font-weight: 500; font-size: 14px; }
+.client-role { font-size: 11px; color: var(--text-muted); }
+
+/* Banner */
+.banner {
+  position: relative;
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+}
+.banner-bg {
+  position: absolute;
+  inset: 0;
+}
+.banner-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.banner-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #0F0F0F 20%, rgba(15,15,15,0.6) 80%);
+}
+.banner-content {
+  position: relative;
+  max-width: 550px;
+  padding: 0 24px;
+}
+
+/* Contact — Refined, clean form with no actual send, improved colors */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  margin-top: 52px;
+}
+.info-card { background: var(--bg-card); padding: 28px; border-radius: 24px; border: 1px solid var(--border-dim); }
+.contact-detail { display: flex; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--border-dim); }
+.contact-icon { width: 44px; height: 44px; border: 1px solid var(--border-dim); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.contact-label { font-size: 10px; letter-spacing: 1px; color: var(--gold); margin-bottom: 4px; }
+.form-group { margin-bottom: 18px; }
+.form-group label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); display: block; margin-bottom: 6px; }
+input, select, textarea {
+  width: 100%;
+  background: var(--bg-rich);
+  border: 1px solid var(--border-dim);
+  padding: 14px 18px;
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  transition: 0.2s;
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); }
+.form-success {
+  background: rgba(200, 169, 81, 0.12);
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  color: var(--gold-light);
+  margin-top: 16px;
+  display: none;
+  backdrop-filter: blur(4px);
+  font-weight: 400;
+}
+.form-success.show { display: block; }
+
+/* Footer */
+footer {
+  background: var(--bg-rich);
+  border-top: 1px solid var(--border-dim);
+  padding: 64px clamp(24px, 6vw, 80px) 32px;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid var(--border-dim);
+}
+.social-links { display: flex; gap: 12px; margin-top: 20px; }
+.social-link {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-dim);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.footer-col h4 { font-size: 13px; letter-spacing: 1px; margin-bottom: 24px; color: var(--gold); }
+.footer-links { list-style: none; }
+.footer-links li { margin-bottom: 12px; }
+.footer-links a { color: var(--text-muted); text-decoration: none; font-size: 13px; transition: 0.2s; }
+.footer-links a:hover { color: var(--gold); }
+.copyright { display: flex; justify-content: space-between; padding-top: 32px; font-size: 12px; color: var(--text-muted); flex-wrap: wrap; gap: 12px; }
+
+/* Responsive */
+@media (max-width: 1000px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .services-grid { grid-template-columns: repeat(2, 1fr); }
+  .contact-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .process-item { grid-template-columns: 60px 1fr; gap: 16px; }
+  .process-desc { grid-column: 2 / 3; margin-top: -8px; }
+}
+@media (max-width: 680px) {
+  .services-grid { grid-template-columns: 1fr; }
+  .stats { flex-wrap: wrap; gap: 28px; }
+  .process-item { grid-template-columns: 1fr; }
+  .process-num { font-size: 36px; }
+}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="loader-logo">INFINITY BUILD PRO</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<nav id="navbar">
+  <a href="#" class="logo">INFINITY <span>BUILD PRO</span></a>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#contact" class="quote-btn">Get Quote</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#home">Home</a>
+  <a href="#about">About</a>
+  <a href="#services">Services</a>
+  <a href="#contact">Contact</a>
+</div>
+
+<!-- Hero Section with high-quality unsplash image -->
+<section id="home" class="hero">
+  <div class="hero-bg"><img src="c:\Users\karth\Downloads\Gemini_Generated_Image_phf90fphf90fphf9.png" alt="Modern Construction Materials"></div>
+  <div class="container hero-content">
+    <div class="hero-badge"><div class="dot"></div> PREMIUM BUILDING SOLUTIONS</div>
+    <h1>We Build <em>Beyond</em><br>the Ordinary</h1>
+    <p>Complete hardware, paints, electrical, plumbing, lighting & sanitary — one trusted partner for Tamil Nadu's finest projects.</p>
+    <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+      <a href="#contact" class="btn-gold">Start Your Project →</a>
+      <a href="#services" class="btn-outline">Explore Services</a>
+    </div>
+    <div class="stats">
+      <div><div class="stat-num">500<span>+</span></div><div class="stat-label">Projects</div></div>
+      <div><div class="stat-num">15<span>+</span></div><div class="stat-label">Years</div></div>
+      <div><div class="stat-num">98<span>%</span></div><div class="stat-label">Satisfaction</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-track">
+    <div class="marquee-item">Hardware Solutions<div class="marquee-dot"></div></div>
+    <div class="marquee-item">Premium Paints<div class="marquee-dot"></div></div>
+    <div class="marquee-item">Electrical Works<div class="marquee-dot"></div></div>
+    <div class="marquee-item">Plumbing Systems<div class="marquee-dot"></div></div>
+    <div class="marquee-item">Lighting & Fans<div class="marquee-dot"></div></div>
+    <div class="marquee-item">Sanitary Ware<div class="marquee-dot"></div></div>
+    <div class="marquee-item">Hardware Solutions<div class="marquee-dot"></div></div>
+    <div class="marquee-item">Premium Paints<div class="marquee-dot"></div></div>
+    <div class="marquee-item">Electrical Works<div class="marquee-dot"></div></div>
+  </div>
+</div>
+
+<!-- Services with clickable galleries (images refined) -->
+<section id="services">
+  <div class="container">
+    <div class="section-tag">Categories</div>
+    <h2>Premium Solutions.<br><em>One Trusted Partner.</em></h2>
+    <p style="color: var(--text-secondary); margin-bottom: 40px;">Click any card to explore product gallery</p>
+    <div class="services-grid" id="servicesGrid">
+      <div class="service-card" data-cat="hardware"><div class="service-img"><img src="https://www.shutterstock.com/image-illustration/hardware-software-computer-technology-background-260nw-2201539081.jpg" alt="Hardware"></div><div class="service-cat">01</div><div class="service-title">Hardware Solutions</div><div class="service-desc">Industrial-grade fasteners, tools, structural fittings.</div><ul class="feature-list"><li>Bolts & anchors</li><li>Door hardware</li><li>Safety systems</li></ul></div>
+      <div class="service-card" data-cat="paints"><div class="service-img"><img src="https://images.unsplash.com/photo-1562259929-b4e1fd3aef09?w=600&q=80" alt="Paints"></div><div class="service-cat">02</div><div class="service-title">Premium Paints</div><div class="service-desc">Interior, exterior, textures & wood finishes.</div><ul class="feature-list"><li>Emulsion paints</li><li>Weather-proof coats</li><li>Specialty textures</li></ul></div>
+      <div class="service-card" data-cat="electrical"><div class="service-img"><img src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=600&q=80" alt="Electrical"></div><div class="service-cat">03</div><div class="service-title">Electrical Works</div><div class="service-desc">Wires, switchgears, MCBs, safety gear.</div><ul class="feature-list"><li>Cables & conduits</li><li>Switchboards</li><li>Surge protection</li></ul></div>
+      <div class="service-card" data-cat="plumbing"><div class="service-img"><img src="https://www.steadyfloplumbing.com/wp-content/uploads/2023/10/plumbing-services-1920w.jpg" alt="Plumbing"></div><div class="service-cat">04</div><div class="service-title">Plumbing & Pipes</div><div class="service-desc">CPVC, UPVC pipes, valves, fittings.</div><ul class="feature-list"><li>Bath fittings</li><li>Pipe systems</li><li>Leak-proof valves</li></ul></div>
+      <div class="service-card" data-cat="lighting"><div class="service-img"><img src="https://windmillfans.com/wp-content/uploads/2025/04/Airxone-LED-1024x576.webp" alt="Lighting"></div><div class="service-cat">05</div><div class="service-title">Lights & Fans</div><div class="service-desc">LED, decorative lights, ceiling fans.</div><ul class="feature-list"><li>Panel lights</li><li>Designer pendants</li><li>Energy-saving fans</li></ul></div>
+      <div class="service-card" data-cat="sanitary"><div class="service-img"><img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=600&q=80" alt="Sanitary"></div><div class="service-cat">06</div><div class="service-title">Sanitary Ware</div><div class="service-desc">Wash basins, faucets, showers, WC.</div><ul class="feature-list"><li>Premium faucets</li><li>Wall-hung WCs</li><li>Shower enclosures</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- Modal Gallery -->
+<div id="galleryModal" class="modal-gallery">
+  <button class="close-modal" id="closeModalBtn">✕</button>
+  <div class="modal-title" id="modalTitle">Hardware Gallery</div>
+  <div class="modal-content" id="galleryImages"></div>
+  <button class="btn-gold" id="closeGalleryBtn" style="background:var(--gold-dark);">Close</button>
+</div>
+
+<section id="why"><div class="container"><div class="section-tag">Why Choose Us</div><h2>The Infinity <em>Advantage</em></h2><div class="why-grid"><div class="why-card"><div class="why-number">01</div><div class="why-title">Comprehensive Range</div><div class="why-text">All 6 categories under one roof — no more vendor chaos.</div></div><div class="why-card"><div class="why-number">02</div><div class="why-title">Premium Quality</div><div class="why-text">Trusted brands, strict quality checks.</div></div><div class="why-card"><div class="why-number">03</div><div class="why-title">Expert Guidance</div><div class="why-text">15+ years of industry expertise.</div></div></div></div></section>
+
+<div class="banner"><div class="banner-bg"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=80" alt="banner"></div><div class="container banner-content"><div class="section-tag">Our Promise</div><h2>Quality You Can <em>Build On</em></h2><p>Every product is quality-checked before delivery. We believe the best buildings start with the best materials.</p><a href="#contact" class="btn-gold">Partner With Us →</a></div></div>
+
+<section id="process"><div class="container"><div class="section-tag">How We Work</div><h2>Simple Process,<br><em>Exceptional Results</em></h2><div class="process-list"><div class="process-item"><div class="process-num">01</div><div class="process-title">Consult & Understand</div><div class="process-desc">Deep discussion about scope, timeline, budget.</div></div><div class="process-item"><div class="process-num">02</div><div class="process-title">Custom Material Plan</div><div class="process-desc">Detailed list with product recommendations & pricing.</div></div><div class="process-item"><div class="process-num">03</div><div class="process-title">Order & Confirm</div><div class="process-desc">Sourcing, quality checks, careful packing.</div></div><div class="process-item"><div class="process-num">04</div><div class="process-title">Deliver & Support</div><div class="process-desc">On-time delivery & after-sales support.</div></div></div></div></section>
+
+<section class="testimonial-section"><div class="container"><div class="section-tag">Testimonials</div><h2>What Our Clients <em>Say</em></h2><div class="testimonial-grid"><div class="testimonial-card"><div class="stars">★★★★★</div><div class="testimonial-text">"One call, all materials — delivered on time. Exceptional service."</div><div class="client"><img class="client-img" src="https://randomuser.me/api/portraits/men/32.jpg" alt="client"><div><div class="client-name">Rajesh Kumar</div><div class="client-role">Chennai</div></div></div></div><div class="testimonial-card"><div class="stars">★★★★★</div><div class="testimonial-text">"Electrical & lighting range is phenomenal. Great consultation."</div><div class="client"><img class="client-img" src="https://randomuser.me/api/portraits/women/68.jpg" alt="client"><div><div class="client-name">Priya Mehta</div><div class="client-role">Interior Designer</div></div></div></div></div></div></section>
+
+<!-- CONTACT: Removed actual send, clean demo form, beautiful colors, no hidden submission -->
+<section id="contact">
+  <div class="container">
+    <div class="section-tag">Get In Touch</div>
+    <h2>Let's Build <em>Something Great</em></h2>
+    <div class="contact-grid">
+      <div class="info-card">
+        <div class="contact-detail"><div class="contact-icon">📍</div><div><div class="contact-label">Visit Us</div><div>123 Builder's Lane, Anna Nagar, Chennai - 600040</div></div></div>
+        <div class="contact-detail"><div class="contact-icon">📞</div><div><div class="contact-label">Call Us</div><div>+91 98765 43210</div></div></div>
+        <div class="contact-detail"><div class="contact-icon">✉️</div><div><div class="contact-label">Email</div><div>hello@infinitybuildpro.com</div></div></div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div><div class="logo" style="font-size:20px;">INFINITY <span>BUILD PRO</span></div><p style="margin-top: 16px; font-size:13px; color:var(--text-muted);">Complete building solutions across Tamil Nadu — premium hardware, paints, electrical, plumbing, lighting & sanitary.</p><div class="social-links"><a href="#" class="social-link">f</a><a href="#" class="social-link">in</a><a href="#" class="social-link">ig</a></div></div>
+      <div class="footer-col"><h4>Navigate</h4><ul class="footer-links"><li><a href="#home">Home</a></li><li><a href="#about">About</a></li><li><a href="#services">Services</a></li><li><a href="#contact">Contact</a></li></ul></div>
+      <div class="footer-col"><h4>Services</h4><ul class="footer-links"><li><a href="#services">Hardware</a></li><li><a href="#services">Paints</a></li><li><a href="#services">Electrical</a></li><li><a href="#services">Lighting</a></li></ul></div>
+      <div class="footer-col"><h4>Support</h4><ul class="footer-links"><li><a href="tel:+919876543210">+91 98765 43210</a></li><li><a href="mailto:hello@infinitybuildpro.com">Email Us</a></li></ul></div>
+    </div>
+    <div class="copyright"><p>© 2025 Infinity Build Pro. All rights reserved.</p><p>Building Excellence, Infinitely.</p></div>
+  </div>
+</footer>
+
+<script>
+// Loader fade out
+window.addEventListener('load', () => {
+  setTimeout(() => document.getElementById('loader').classList.add('hide'), 1800);
+});
+
+// Navbar scroll & mobile
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 40));
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+function toggleMenu() { mobileMenu.classList.toggle('open'); }
+hamburger.addEventListener('click', toggleMenu);
+document.querySelectorAll('.mobile-menu a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.remove('open')));
+
+// Reveal on scroll
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.service-card, .why-card, .testimonial-card, .process-item, .contact-grid > *').forEach(el => { el.classList.add('reveal'); observer.observe(el); });
+
+// GALLERY DATA (premium images count exactly as requested, no missing)
+const galleryMap = {
+  hardware: { title: '🔧 Hardware Solutions (3 Premium Items)', images: ['https://www.shutterstock.com/image-illustration/hardware-software-computer-technology-background-260nw-2201539081.jpg', 'https://www.shutterstock.com/image-illustration/hardware-software-computer-technology-background-260nw-2201539081.jpg', 'https://intechhouse.com/wp-content/uploads/2023/04/new-20-1024x630.jpg'] },
+  paints: { title: '🎨 Premium Paints (2 Stunning Finishes)', images: ['https://images.unsplash.com/photo-1562259929-b4e1fd3aef09?w=500&q=80', 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=500&q=80'] },
+  electrical: { title: '⚡ Electrical Works (2 Solutions)', images: ['https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=500&q=80', 'https://images.unsplash.com/photo-1611492717332-7b1b0edc4c0e?w=500&q=80'] },
+  plumbing: { title: '🚰 Plumbing & Pipes (2 Systems)', images: ['https://www.steadyfloplumbing.com/wp-content/uploads/2023/10/plumbing-services-1920w.jpg', 'https://www.steadyfloplumbing.com/wp-content/uploads/2023/10/plumbing-services-1920w.jpg'] },
+  lighting: { title: '💡 Lights & Fans (2 Designs)', images: ['https://images.unsplash.com/photo-1524484485831-a92ffc0de03f?w=500&q=80', 'https://images.unsplash.com/photo-1565814636199-ae8133055c1c?w=500&q=80'] },
+  sanitary: { title: '🚽 Sanitary Ware (2 Elegant)', images: ['https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=500&q=80', 'https://images.unsplash.com/photo-1584622781564-1d987f7333c1?w=500&q=80'] }
+};
+
+const modal = document.getElementById('galleryModal');
+const modalTitle = document.getElementById('modalTitle');
+const galleryContainer = document.getElementById('galleryImages');
+
+function openGallery(category) {
+  const data = galleryMap[category];
+  if (!data) return;
+  modalTitle.innerText = data.title;
+  galleryContainer.innerHTML = '';
+  data.images.forEach(src => {
+    const img = document.createElement('img');
+    img.src = src;
+    galleryContainer.appendChild(img);
+  });
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeGallery() { modal.classList.remove('open'); document.body.style.overflow = ''; }
+document.querySelectorAll('.service-card').forEach(card => {
+  card.addEventListener('click', (e) => {
+    const cat = card.getAttribute('data-cat');
+    if (cat) openGallery(cat);
+  });
+});
+document.getElementById('closeModalBtn')?.addEventListener('click', closeGallery);
+document.getElementById('closeGalleryBtn')?.addEventListener('click', closeGallery);
+modal.addEventListener('click', (e) => { if (e.target === modal) closeGallery(); });
+
+// SIMPLE DEMO FORM — No actual send, just success message and reset fields (clean)
+document.getElementById('submitBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  const name = document.getElementById('name').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  if(!name || !phone) {
+    alert("Please fill at least Name and Phone to request callback.");
+    return;
+  }
+  const msgDiv = document.getElementById('formSuccessMsg');
+  msgDiv.classList.add('show');
+  document.getElementById('contactForm').reset();
+  setTimeout(() => msgDiv.classList.remove('show'), 4200);
+});
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+</script>
+</body>
+</html>
